@@ -291,17 +291,42 @@ $header.Location  = [Drawing.Point]::new(0, 0)
 $header.BackColor = $CARD
 $form.Controls.Add($header)
 
-$accentBar = [Windows.Forms.Panel]::new()
-$accentBar.Size      = [Drawing.Size]::new(4, 34)
-$accentBar.Location  = [Drawing.Point]::new(16, 14)
-$accentBar.BackColor = $ACCENT
-$header.Controls.Add($accentBar)
+# ── Logo oficial de Chrome dibujado con GDI+ (vectorial, sin dependencias) ──
+$logo = [Windows.Forms.Panel]::new()
+$logo.Size      = [Drawing.Size]::new(36, 36)
+$logo.Location  = [Drawing.Point]::new(16, 13)
+$logo.BackColor = $CARD
+$logo.Add_Paint({
+    param($s, $e)
+    $g = $e.Graphics
+    $g.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
+    $d  = [float]([math]::Min($s.Width, $s.Height) - 2)
+    $x0 = 1.0; $y0 = 1.0
+    $cx = $s.Width / 2.0; $cy = $s.Height / 2.0
+    # Tres sectores de color (rojo arriba, amarillo derecha-abajo, verde izquierda-abajo)
+    $red = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(234, 67, 53))
+    $yel = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(251, 188, 5))
+    $grn = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(52, 168, 83))
+    $g.FillPie($red, $x0, $y0, $d, $d, 210, 120)
+    $g.FillPie($yel, $x0, $y0, $d, $d, 330, 120)
+    $g.FillPie($grn, $x0, $y0, $d, $d, 90,  120)
+    # Anillo blanco
+    $wr = $d * 0.46
+    $wb = New-Object Drawing.SolidBrush ([Drawing.Color]::White)
+    $g.FillEllipse($wb, $cx - $wr / 2, $cy - $wr / 2, $wr, $wr)
+    # Circulo azul central
+    $br = $d * 0.32
+    $bb = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(66, 133, 244))
+    $g.FillEllipse($bb, $cx - $br / 2, $cy - $br / 2, $br, $br)
+    $red.Dispose(); $yel.Dispose(); $grn.Dispose(); $wb.Dispose(); $bb.Dispose()
+})
+$header.Controls.Add($logo)
 
 $lblTitle = [Windows.Forms.Label]::new()
 $lblTitle.Text      = $APP_NAME
 $lblTitle.Font      = $FONT_TITLE
 $lblTitle.ForeColor = $FG
-$lblTitle.Location  = [Drawing.Point]::new(28, 8)
+$lblTitle.Location  = [Drawing.Point]::new(60, 8)
 $lblTitle.AutoSize  = $true
 $header.Controls.Add($lblTitle)
 
@@ -309,7 +334,7 @@ $lblSub = [Windows.Forms.Label]::new()
 $lblSub.Text      = $APP_SUB
 $lblSub.Font      = $FONT_SUB
 $lblSub.ForeColor = $MUTED
-$lblSub.Location  = [Drawing.Point]::new(30, 39)
+$lblSub.Location  = [Drawing.Point]::new(62, 39)
 $lblSub.AutoSize  = $true
 $header.Controls.Add($lblSub)
 
