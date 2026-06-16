@@ -1,4 +1,4 @@
-﻿# ChromeControl - Gestor grafico de politicas de Google Chrome via registro de Windows
+# ChromeControl - Gestor grafico de politicas de Google Chrome via registro de Windows
 # Autor: Daniel Rodriguez | https://xdoofy92.com
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
