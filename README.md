@@ -10,7 +10,7 @@
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)
-![Chrome](https://img.shields.io/badge/Chrome-28_interruptores-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)
+![Chrome](https://img.shields.io/badge/Chrome-27_interruptores-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)
 [![Licencia MIT](https://img.shields.io/badge/Licencia-MIT-3DA639?style=for-the-badge)](<LICENSE.txt>)
 
 </div>
@@ -34,7 +34,7 @@ La app refleja el **estado real** de cada característica con un interruptor est
 | 🟢 **Encendido** | verde, texto normal | La característica está **activa** (valor por defecto del navegador) |
 | ⚪ **Apagado** | gris, texto atenuado | Se **desactivará** al pulsar **Aplicar** (escribe la política en el registro) |
 
-El contador de la cabecera (**`0 / 28 a Desactivar`**) te dice cuántas tienes marcadas para apagar. Al pulsar **Aplicar**, los cambios se guardan en:
+El contador de la cabecera (**`0 / 27 a Desactivar`**) te dice cuántas tienes marcadas para apagar. Al pulsar **Aplicar**, los cambios se guardan en:
 
 ```
 HKLM:\SOFTWARE\Policies\Google\Chrome
@@ -47,15 +47,15 @@ HKLM:\SOFTWARE\Policies\Google\Chrome
 | Botón | Acción |
 |:------|:-------|
 | **Activar todo** | Enciende todos los interruptores (estado por defecto) |
-| **Desact. todo** | Los apaga todos → *debloat completo* en un clic |
-| **Default** | Elimina la clave de políticas → Chrome deja de salir *administrado por tu organización* |
+| **Desact. todo** | Los apaga todos → *debloat completo* en un clic (pregunta antes de incluir las opciones sensibles de seguridad) |
+| **Default** | Elimina las políticas (pide confirmación) → Chrome deja de salir *administrado por tu organización*. Si hay políticas que no creó la app, deja elegir entre borrarlas todas o solo las propias |
 | **Aplicar** | Guarda los cambios *(reinicia Chrome para que surtan efecto)* |
 
 ---
 
 ## 🧩 Características que puedes desactivar
 
-> 28 interruptores en un único listado, todos encendidos por defecto. Aquí los agrupamos por tema para que sea más fácil de leer.
+> 27 interruptores en un único listado, todos encendidos por defecto. Aquí los agrupamos por tema para que sea más fácil de leer.
 
 ### 🤖 IA y Gemini
 
@@ -93,7 +93,7 @@ HKLM:\SOFTWARE\Policies\Google\Chrome
 
 | Característica | Qué apaga | Clave de registro |
 |:--------------|:----------|:------------------|
-| Forzar inicio de sesión | Inicio de sesión con cuenta de Google en el navegador | `BrowserSignin` |
+| Inicio de sesión en el navegador | Iniciar sesión en Chrome con cuenta de Google (y su sincronización) | `BrowserSignin` |
 | Sincronización de navegación | Sincronización con la cuenta de Google | `SyncDisabled` |
 
 ### 💳 Autocompletar y pagos
@@ -110,9 +110,8 @@ HKLM:\SOFTWARE\Policies\Google\Chrome
 | Característica | Qué apaga | Clave de registro |
 |:--------------|:----------|:------------------|
 | Modo en segundo plano | Chrome sigue ejecutándose al cerrar la ventana | `BackgroundModeEnabled` |
-| Pestañas promocionales / What's New | Páginas promocionales y de novedades tras actualizar | `PromotionalTabsEnabled` |
+| Pestañas promocionales / What's New | Páginas promocionales y de novedades tras actualizar | `PromotionalTabsEnabled`, `PromotionsEnabled` |
 | Aviso de navegador predeterminado | Insistencia para fijar Chrome como predeterminado | `DefaultBrowserSettingEnabled` |
-| Página de bienvenida (actualizar) | Página de bienvenida al actualizar el sistema | `WelcomePageOnOSUpgradeEnabled` |
 | Lista de compras y precios | Lista de compras y seguimiento de precios | `ShoppingListEnabled` |
 | Sugerencias de contenido (NTP) | Tarjetas de contenido en la página de nueva pestaña | `NTPCardsVisible` |
 | Recomendaciones multimedia | Recomendaciones de medios en la nueva pestaña | `MediaRecommendationsEnabled` |
@@ -121,11 +120,11 @@ HKLM:\SOFTWARE\Policies\Google\Chrome
 
 | Característica | Qué apaga | Clave de registro |
 |:--------------|:----------|:------------------|
-| Bloquear cookies de terceros | Mantiene **bloqueadas** las cookies de seguimiento de terceros | `BlockThirdPartyCookies` |
+| Cookies de terceros | Cookies de seguimiento de terceros (apagado = **bloqueadas**) | `BlockThirdPartyCookies` |
 | Conjuntos de sitios relacionados | Related Website Sets (cookies compartidas entre dominios) | `RelatedWebsiteSetsEnabled` |
 | Navegación segura (Safe Browsing) | Filtro anti-phishing (envía URLs a Google) | `SafeBrowsingProtectionLevel` |
 
-> ⚠️ **Ojo con las dos últimas.** *Bloquear cookies de terceros* es positivo para la privacidad, pero apagar **Navegación segura** (Safe Browsing) **reduce tu protección** contra phishing y malware. Desactívala solo si sabes lo que haces.
+> ⚠️ **Ojo con las dos últimas.** Apagar *Cookies de terceros* (bloquearlas) es positivo para la privacidad, pero apagar **Navegación segura** (Safe Browsing) **reduce tu protección** contra phishing y malware. Desactívala solo si sabes lo que haces. Por eso **Desact. todo** pregunta antes de incluirla.
 
 ---
 
@@ -185,13 +184,16 @@ powershell -ExecutionPolicy Bypass -File .\ChromeControl.ps1
 - **Interfaz**: Windows Forms con tema oscuro e interruptores dibujados a mano (anti-aliasing).
 - **Tipo de valores**: todas las políticas se aplican como `DWord` (32 bits).
 - **Multi-clave**: algunas filas (Gemini, Privacy Sandbox) escriben **varias** claves a la vez con un solo interruptor.
-- **Reversible**: desmarcar y aplicar **elimina** la clave; no deja residuos.
+- **Reversible**: volver a encender y aplicar **elimina** la política; cuando no queda ninguna se borra también la clave, sin dejar residuos.
+- **Avisos**: pide confirmación antes de **Default**, antes de apagar en bloque las opciones sensibles y al cerrar con cambios sin aplicar.
+- **Errores reales**: si una escritura en el registro falla, se cuenta y se muestra en la barra de estado.
 
 ---
 
 ## 🛡️ Seguridad y privacidad
 
 - Solo toca claves bajo `HKLM\SOFTWARE\Policies\Google\Chrome`. **No** modifica otros navegadores ni el sistema.
+- **Default** no borra a ciegas: si detecta políticas que no creó la app (otra herramienta o tu organización) te deja conservarlas.
 - **No** recopila ni transmite ningún dato tuyo.
 - ⚠️ La app solicita permisos de **administrador**. Verifica la procedencia y revisa el código de cualquier copia, incluidas las modificadas, antes de ejecutarla.
 - Si se ejecuta sin archivo local, la auto-elevación puede descargar el script del repositorio. Prefiere descargarlo, revisarlo y ejecutarlo localmente para saber qué código estás ejecutando.
